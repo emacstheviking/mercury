@@ -302,11 +302,17 @@ get_short_interface_int3_from_items([Item | Items], !IntItems, !IntTypeDefns,
         % of the type constructors in the instance's member types.
         !:NeedAvails = do_need_avails
     ;
-        ( Item = item_inst_defn(_)
-        ; Item = item_mode_defn(_)
-        ),
-        !:IntItems = cord.snoc(!.IntItems, Item),
-        !:NeedAvails = do_need_avails
+        Item = item_inst_defn(ItemInstInfo),
+        AbstractItemInstInfo =
+            ItemInstInfo ^ id_inst_defn := abstract_inst_defn,
+        AbstractItem = item_inst_defn(AbstractItemInstInfo),
+        !:IntItems = cord.snoc(!.IntItems, AbstractItem)
+    ;
+        Item = item_mode_defn(ItemModeInfo),
+        AbstractItemModeInfo =
+            ItemModeInfo ^ md_mode_defn := abstract_mode_defn,
+        AbstractItem = item_mode_defn(AbstractItemModeInfo),
+        !:IntItems = cord.snoc(!.IntItems, AbstractItem)
     ;
         Item = item_clause(ItemClause),
         Context = ItemClause ^ cl_context,
