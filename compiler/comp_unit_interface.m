@@ -281,17 +281,12 @@ get_short_interface_int3_from_items([Item | Items], !IntItems, !IntTypeDefns,
         !:IntItems = cord.snoc(!.IntItems, AbstractOrForeignItem)
     ;
         Item = item_typeclass(ItemTypeClassInfo),
-        AbstractItemTypeClassInfo = ItemTypeClassInfo ^ tc_class_methods
-            := class_interface_abstract,
+        ItemTypeClassInfo = item_typeclass_info(ClassName, ParamsTVars,
+            _Constraints, _FunDeps, _Methods, TVarSet, Context, SeqNum),
+        AbstractItemTypeClassInfo = item_typeclass_info(ClassName, ParamsTVars,
+            [], [], class_interface_abstract, TVarSet, Context, SeqNum),
         AbstractItem = item_typeclass(AbstractItemTypeClassInfo),
-        !:IntItems = cord.snoc(!.IntItems, AbstractItem),
-        % We may need the imported modules to module qualify the names
-        % of the type constructors in the superclass constraints, if any.
-        % XXX TYPE_REPN Then we should set do_need_avails only if there
-        % *are* some superclass constraints.
-        % XXX TYPE_REPN Also, why do we need to put the superclass
-        % constraints into .int3 files?
-        !:NeedAvails = do_need_avails
+        !:IntItems = cord.snoc(!.IntItems, AbstractItem)
     ;
         Item = item_instance(ItemInstanceInfo),
         AbstractItemInstanceInfo = ItemInstanceInfo ^ ci_method_instances
@@ -606,9 +601,7 @@ get_private_interface_int0_from_item(ModuleName, Item, !SectionItemsCord) :-
         )
     ;
         % XXX ITEM_LIST The action here follows what this predicate used
-        % to do before the item list change. I (zs) don't think that
-        % it does the right thing for item_nothing, but then again
-        % I don't think that such items actually reach here ...
+        % to do before the item list change.
         ( Item = item_type_defn(_)
         ; Item = item_inst_defn(_)
         ; Item = item_mode_defn(_)
