@@ -1216,10 +1216,9 @@ get_interface_int1_items_loop_imp([Item | Items], !ItemsCord,
             !NeededModules)
     ;
         Item = item_pragma(ItemPragma),
-        ItemPragma = item_pragma_info(Pragma, MaybeAttrs, Context, SeqNum),
+        ItemPragma = item_pragma_info(Pragma, MaybeAttrs, _Context, _SeqNum),
         ( if Pragma = pragma_foreign_enum(FEInfo) then
-            Reconstructor = foreign_enum_reconstructor(FEInfo, MaybeAttrs,
-                Context, SeqNum),
+            Reconstructor = foreign_enum_reconstructor(FEInfo, MaybeAttrs),
             !:ForeignEnumsCord = cord.snoc(!.ForeignEnumsCord, Reconstructor)
         else
             unexpected($pred, "non-foreign-enum pragma")
@@ -1956,16 +1955,7 @@ is_needed_avail(NeededModules, Avail) :-
 :- type foreign_enum_reconstructor
     --->    foreign_enum_reconstructor(
                 pragma_info_foreign_enum,
-                item_maybe_attrs,
-                % XXX ITEM_LIST The context and the sequence number
-                % don't get written to interface files, so we need
-                % the last two fields ONLY for the sanity check
-                % that compares the output of get_interface_int1
-                % with the output of the old code that used to do
-                % the same job. When that sanity check is deleted,
-                % these two fields should be deleted as well.
-                prog_context,
-                int
+                item_maybe_attrs
             ).
 
 :- pred add_foreign_enum_item_if_needed(type_defn_map::in,
@@ -1975,7 +1965,7 @@ is_needed_avail(NeededModules, Avail) :-
 add_foreign_enum_item_if_needed(IntTypesMap, ForeignEnumReconstuctor,
         !Items, !NeedForeignImportLangs) :-
     ForeignEnumReconstuctor = foreign_enum_reconstructor(FEInfo,
-        MaybeAttrs, Context, SeqNum),
+        MaybeAttrs),
     FEInfo = pragma_info_foreign_enum(_Lang, TypeCtor, _Values),
     ( if
         map.search(IntTypesMap, TypeCtor, Defns),
@@ -1987,7 +1977,7 @@ add_foreign_enum_item_if_needed(IntTypesMap, ForeignEnumReconstuctor,
     then
         Pragma = pragma_foreign_enum(FEInfo),
         ItemPragmaInfo = item_pragma_info(Pragma,  MaybeAttrs,
-            Context, SeqNum),
+            term.context_init, -1),
         Item = item_pragma(ItemPragmaInfo),
         !:Items = [Item | !.Items],
         set.insert_list(pragma_needs_foreign_imports(Pragma),
