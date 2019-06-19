@@ -211,7 +211,6 @@ grab_imported_modules_augment(Globals, SourceFileName, SourceFileModuleName,
             % to the implementation section, leaving an abstract version
             % in the interface section, like we do in the else case.
             % XXX Why not?
-            % XXX FIM_SECTION
             SrcIntItems = FIMItems ++ IntItems,
             SrcImpItems = ImpItems,
             SrcSubItems = []
@@ -233,7 +232,6 @@ grab_imported_modules_augment(Globals, SourceFileName, SourceFileModuleName,
                 [], RevImpClauseItems, [], RevImpDeclItems),
             list.reverse(RevImpClauseItems, ImpClauseItems),
             list.reverse(RevImpDeclItems, ImpDeclItems),
-            % XXX FIM_SECTION
             SrcIntItems = FIMItems ++ IntAbstractInstanceItems ++
                 IntNonInstanceItems,
             SrcImpItems = ImpClauseItems,
@@ -423,7 +421,6 @@ grab_unqual_imported_modules_make_int(Globals, SourceFileName,
         make_and_add_item_block(ModuleName, sms_implementation,
             ImpIncls, ImpAvails, ImpItems,
             [], SrcItemBlocks0),
-        % XXX FIM_SECTION
         make_and_add_item_block(ModuleName, sms_interface,
             IntIncls, IntAvails, IntItemsWithFIMs,
             SrcItemBlocks0, SrcItemBlocks),

@@ -694,12 +694,8 @@ generate_pre_grab_pre_qual_interface_for_int1_int2(RawCompUnit,
         IntItems = IntItems0
     ;
         Langs = [_ | _],
-        % XXX ITEM_LIST Adding the foreign_import_module items to the
-        % interface section is a guess.
-        % XXX FIM_SECTION (It seems to be a wrong guess; the compiler
-        % bootstraps even if we add them to implementation section.)
-        % XXX FIM_SECTION We may be adding these items to the
-        % same lists of items more than once.
+        % XXX FIM We may be adding these items to the same lists of items
+        % more than once.
         list.foldl(accumulate_foreign_import(ModuleName), Langs,
             IntItems0, IntItems)
     ),
@@ -2133,13 +2129,8 @@ get_ifile_in_items_acc([Item | Items], !IFileItemsCord) :-
 
 add_needed_foreign_import_module_items_to_raw_item_blocks(ModuleName,
         !ItemBlocks) :-
-    % XXX ITEM_LIST sms_interface is a guess. The original code (whose
-    % behavior the current code is trying to emulate) simply added
-    % the generated items to a raw item list, seemingly without caring
-    % about what section those items would end up (it certainly did not
-    % look for any section markers).
-    % XXX FIM_SECTION (It seems to be a wrong guess; the compiler bootstraps
-    % even if we pass ms_implementation here.)
+    % XXX FIM We may be adding these items to the same lists of items
+    % more than once.
     add_needed_foreign_import_module_items_to_item_blocks(ModuleName,
         ms_interface, !ItemBlocks).
 
