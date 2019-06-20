@@ -556,14 +556,20 @@ separate_instance_non_instance_loop([],
 separate_instance_non_instance_loop([Item | Items], 
         !AbstractInstanceCord, !InstanceCord, !NonInstanceCord) :-
     ( if Item = item_instance(ItemInstance) then
-        % XXX To me (zs) this does not look like the right thing to do
-        % if ItemInstance is *already* abstract.
-        AbstractItemInstance =
-            ItemInstance ^ ci_method_instances := instance_body_abstract,
-        AbstractItem = item_instance(AbstractItemInstance),
-        !:AbstractInstanceCord =
-            cord.snoc(!.AbstractInstanceCord, AbstractItem),
-        !:InstanceCord = cord.snoc(!.InstanceCord, Item)
+        Body = ItemInstance ^ ci_method_instances,
+        (
+            Body = instance_body_concrete(_),
+            AbstractItemInstance =
+                ItemInstance ^ ci_method_instances := instance_body_abstract,
+            AbstractItem = item_instance(AbstractItemInstance),
+            !:AbstractInstanceCord =
+                cord.snoc(!.AbstractInstanceCord, AbstractItem),
+            !:InstanceCord = cord.snoc(!.InstanceCord, Item)
+        ;
+            Body = instance_body_abstract,
+            % Do not put another copy of this item into !InstanceCord.
+            !:AbstractInstanceCord = cord.snoc(!.AbstractInstanceCord, Item)
+        )
     else
         !:NonInstanceCord = cord.snoc(!.NonInstanceCord, Item)
     ),
